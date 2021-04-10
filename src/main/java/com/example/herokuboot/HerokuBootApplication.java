@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Entity;
 
-import org.hibernate.annotations.Entity;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +15,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SuppressWarnings("deprecation")
 @EntityScan("com.example.herokuboot")
 @SpringBootApplication
 public class HerokuBootApplication {
@@ -49,7 +48,6 @@ class HelloController {
 	}
 }
 
-@SuppressWarnings("deprecation")
 @Entity
 class Greeting {
 	@Id
