@@ -9,12 +9,14 @@ import org.hibernate.annotations.Entity;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SuppressWarnings("deprecation")
+@EntityScan("com.example.herokuboot")
 @SpringBootApplication
 public class HerokuBootApplication {
 
