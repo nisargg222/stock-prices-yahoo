@@ -42,9 +42,9 @@ public class HerokuBootApplication {
 			String allData = "";
 			try (BufferedInputStream inputStream = new BufferedInputStream(
 					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
-				byte data[] = new byte[1024];
+				byte data[] = new byte[16384];
 				int byteContent;
-				while ((byteContent = inputStream.read(data, 0, 1024)) != -1) {
+				while ((byteContent = inputStream.read(data, 0, 16384)) != -1) {
 //					System.out.println(new String(data));
 //					System.out.println("....");
 					allData = allData.concat(new String(data));
@@ -60,7 +60,7 @@ public class HerokuBootApplication {
 			} catch (IOException e) {
 				// handles IO exceptions
 			}
-			System.out.print(stock_list.size());
+			System.out.println(stock_list.size());
 			stockRepository.saveAll(stock_list);
 		}
 	}
