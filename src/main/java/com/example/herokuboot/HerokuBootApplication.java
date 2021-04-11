@@ -6,23 +6,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Entity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.herokuboot.entity.Stocks;
+import com.example.herokuboot.repository.StockRepository;
 
 @EntityScan("com.example.herokuboot")
 @SpringBootApplication
@@ -34,44 +30,14 @@ public class HerokuBootApplication {
 
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
-	    private final Logger LOG =
-	      LoggerFactory.getLogger(CommandLineAppStartupRunner.class);
+		private final Logger LOG = LoggerFactory.getLogger(CommandLineAppStartupRunner.class);
 
-	    @Autowired
+		@Autowired
 		private StockRepository stockRepository;
 
-	    @Override
-	    public void run(String...args) throws Exception {
-	    	LOG.info("hello");
-	    	ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
-			String allData = "";
-			try (BufferedInputStream inputStream = new BufferedInputStream(
-					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
-				byte data[] = new byte[1024];
-				int byteContent;
-				while ((byteContent = inputStream.read(data, 0, 1024)) != -1) {
-//					System.out.println(new String(data));
-//					System.out.println("....");
-					allData = allData.concat(new String(data));
-				}
-				String[] stock_data = allData.split("\n");
-				for(int i = 1;i<stock_data.length;i++) {
-					String[] stock_split = stock_data[i].split(",");
-					Stocks stock = new Stocks();
-					stock.setSymbol(stock_split[0]);
-					stock.setName(stock_split[1]);
-					stock_list.add(stock);
-				}
-			} catch (IOException e) {
-				// handles IO exceptions
-			}
-			System.out.print(stock_list);
-			stockRepository.saveAll(stock_list);
-	    }
-	}
-	@Bean
-	ApplicationRunner applicationRunner(StockRepository stockRepository) {
-		return args -> {
+		@Override
+		public void run(String... args) throws Exception {
+			LOG.info("hello");
 			ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
 			String allData = "";
 			try (BufferedInputStream inputStream = new BufferedInputStream(
@@ -84,7 +50,7 @@ public class HerokuBootApplication {
 					allData = allData.concat(new String(data));
 				}
 				String[] stock_data = allData.split("\n");
-				for(int i = 1;i<stock_data.length;i++) {
+				for (int i = 1; i < stock_data.length; i++) {
 					String[] stock_split = stock_data[i].split(",");
 					Stocks stock = new Stocks();
 					stock.setSymbol(stock_split[0]);
@@ -94,9 +60,9 @@ public class HerokuBootApplication {
 			} catch (IOException e) {
 				// handles IO exceptions
 			}
-			System.out.print(stock_list);
+			System.out.print(stock_list.size());
 			stockRepository.saveAll(stock_list);
-		};
+		}
 	}
 }
 
@@ -115,48 +81,4 @@ class HelloController {
 	List<Stocks> greetings() {
 		return (List<Stocks>) stockRepository.findAll();
 	}
-}
-
-@Entity
-class Stocks {
-	@Id
-	@GeneratedValue
-	private Long id;
-	private String symbol;
-	private String name;
-	private String price;
-
-	public Stocks() {
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPrice() {
-		return price;
-	}
-
-	public void setPrice(String price) {
-		this.price = price;
-	}
-}
-
-interface StockRepository extends CrudRepository<Stocks, Long> {
 }
