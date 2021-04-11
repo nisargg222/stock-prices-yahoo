@@ -1,5 +1,9 @@
 package com.example.herokuboot;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.GeneratedValue;
@@ -25,10 +29,32 @@ public class HerokuBootApplication {
 	}
 
 	@Bean
-	ApplicationRunner applicationRunner(GreetingRepository greetingRepository) {
+	ApplicationRunner applicationRunner(StockRepository stockRepository) {
 		return args -> {
-			greetingRepository.save(new Greeting("Hello"));
-			greetingRepository.save(new Greeting("Hey"));
+			ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
+			String allData = "";
+			try (BufferedInputStream inputStream = new BufferedInputStream(
+					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
+				byte data[] = new byte[1024];
+				int byteContent;
+				while ((byteContent = inputStream.read(data, 0, 1024)) != -1) {
+//					System.out.println(new String(data));
+//					System.out.println("....");
+					allData = allData.concat(new String(data));
+				}
+				String[] stock_data = allData.split("\n");
+				for(int i = 1;i<stock_data.length;i++) {
+					String[] stock_split = stock_data[i].split(",");
+					Stocks stock = new Stocks();
+					stock.setSymbol(stock_split[0]);
+					stock.setName(stock_split[1]);
+					stock_list.add(stock);
+				}
+			} catch (IOException e) {
+				// handles IO exceptions
+			}
+			System.out.print(stock_list);
+			stockRepository.saveAll(stock_list);
 		};
 	}
 }
@@ -37,7 +63,7 @@ public class HerokuBootApplication {
 class HelloController {
 
 	@Autowired
-	private GreetingRepository greetingRepository;
+	private StockRepository stockRepository;
 
 	@GetMapping("/")
 	String hello() {
@@ -45,34 +71,51 @@ class HelloController {
 	}
 
 	@GetMapping("/greetings")
-	List<Greeting> greetings() {
-		return (List<Greeting>) greetingRepository.findAll();
+	List<Stocks> greetings() {
+		return (List<Stocks>) stockRepository.findAll();
 	}
 }
 
 @Entity
-class Greeting {
+class Stocks {
 	@Id
 	@GeneratedValue
 	private Long id;
+	private String symbol;
+	private String name;
+	private String price;
 
-	private String message;
-
-	public Greeting() {
+	public Stocks() {
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getSymbol() {
+		return symbol;
 	}
 
-	public Greeting(String message) {
-		this.message = message;
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
 	}
 }
 
-interface GreetingRepository extends CrudRepository<Greeting, Long> {
+interface StockRepository extends CrudRepository<Stocks, Long> {
 }
