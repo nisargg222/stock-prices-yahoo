@@ -42,9 +42,9 @@ public class HerokuBootApplication {
 			String allData = "";
 			try (BufferedInputStream inputStream = new BufferedInputStream(
 					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
-				byte data[] = new byte[16384];
+				byte data[] = new byte[8192];
 				int byteContent;
-				while ((byteContent = inputStream.read(data, 0, 16384)) != -1) {
+				while ((byteContent = inputStream.read(data, 0, 8192)) != -1) {
 //					System.out.println(new String(data));
 //					System.out.println("....");
 					allData = allData.concat(new String(data));
