@@ -37,19 +37,11 @@ public class HerokuBootApplication {
 
 		@Override
 		public void run(String... args) throws Exception {
-			LOG.info("hello");
 			ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
-			String allData = "";
 			try (BufferedInputStream inputStream = new BufferedInputStream(
 					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
-				byte data[] = new byte[8192];
-				int byteContent;
-				while ((byteContent = inputStream.read(data, 0, 8192)) != -1) {
-//					System.out.println(new String(data));
-//					System.out.println("....");
-					allData = allData.concat(new String(data));
-				}
-				String[] stock_data = allData.split("\n");
+				byte data[] = inputStream.readAllBytes();
+				String[] stock_data = (new String(data)).split("\n");
 				for (int i = 1; i < stock_data.length; i++) {
 					String[] stock_split = stock_data[i].split(",");
 					Stocks stock = new Stocks();
@@ -58,10 +50,10 @@ public class HerokuBootApplication {
 					stock_list.add(stock);
 				}
 			} catch (IOException e) {
-				System.out.println("exception handled");
+				LOG.debug("exception handled");
 				// handles IO exceptions
 			}
-			System.out.println(stock_list.size());
+			LOG.info("Added "+stock_list.size()+" stocks to the db.");
 			stockRepository.saveAll(stock_list);
 		}
 	}
