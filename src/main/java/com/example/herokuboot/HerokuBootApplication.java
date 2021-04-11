@@ -58,6 +58,7 @@ public class HerokuBootApplication {
 					stock_list.add(stock);
 				}
 			} catch (IOException e) {
+				System.out.println("exception handled");
 				// handles IO exceptions
 			}
 			System.out.println(stock_list.size());
