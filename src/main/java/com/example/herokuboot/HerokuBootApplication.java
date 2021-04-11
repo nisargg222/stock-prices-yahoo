@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class HerokuBootApplication {
 			ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
 			try (BufferedInputStream inputStream = new BufferedInputStream(
 					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
-				byte data[] = inputStream.readAllBytes();
+				byte data[] = IOUtils.toByteArray(inputStream);
 				String[] stock_data = (new String(data)).split("\n");
 				for (int i = 1; i < stock_data.length; i++) {
 					String[] stock_split = stock_data[i].split(",");
