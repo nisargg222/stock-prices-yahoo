@@ -1,4 +1,4 @@
-package com.example.herokuboot.scheduler;
+package com.example.herokuboot.service;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -9,25 +9,21 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import com.example.herokuboot.entity.Stocks;
 import com.example.herokuboot.repository.StockRepository;
+import com.example.herokuboot.scheduler.DataLoadScheduler;
 
-@Configuration
-@EnableScheduling
-public class SymbolLoadScheduler {
-
-	private final Logger LOGGER = LoggerFactory.getLogger(SymbolLoadScheduler.class);
+@Service
+public class SymbolLoaderService {
+	
+	private final Logger LOGGER = LoggerFactory.getLogger(DataLoadScheduler.class);
 
 	@Autowired
 	private StockRepository stockRepository;
 
-	@Scheduled(cron = "30 * * * * *")
-	public void scheduleTaskUsingCronExpression() {
-
+	public void populateSymbol() {
 		LOGGER.info("Time");
 		ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
 		try (BufferedInputStream inputStream = new BufferedInputStream(
@@ -53,7 +49,7 @@ public class SymbolLoadScheduler {
 	}
 
 	private int saveList(ArrayList<Stocks> stock_list) {
-		int counter=0;
+		int counter = 0;
 		for (int i = 0; i < stock_list.size(); i++) {
 			if (stockRepository.findBySymbol(stock_list.get(i).getSymbol()).isEmpty()) {
 				stockRepository.save(stock_list.get(i));
