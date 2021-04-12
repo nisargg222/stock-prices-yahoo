@@ -25,7 +25,7 @@ public class SymbolLoadScheduler {
 	@Autowired
 	private StockRepository stockRepository;
 
-	@Scheduled(cron = "0 * * * * *")
+	@Scheduled(cron = "30 * * * * *")
 	public void scheduleTaskUsingCronExpression() {
 
 		LOGGER.info("Time");
@@ -44,11 +44,22 @@ public class SymbolLoadScheduler {
 				stock.setName(stock_split[1]);
 				stock_list.add(stock);
 			}
-			stockRepository.saveAll(stock_list);
+			int stock_added = saveList(stock_list);
 
-			LOGGER.info("Added " + stock_list.size() + " stocks to the db.");
+			LOGGER.info("Added " + stock_added + " stocks to the db.");
 		} catch (IOException e) {
 			LOGGER.debug("exception handled");
 		}
+	}
+
+	private int saveList(ArrayList<Stocks> stock_list) {
+		int counter=0;
+		for (int i = 0; i < stock_list.size(); i++) {
+			if (stockRepository.findBySymbol(stock_list.get(i).getSymbol()).isEmpty()) {
+				stockRepository.save(stock_list.get(i));
+				counter++;
+			}
+		}
+		return counter;
 	}
 }
