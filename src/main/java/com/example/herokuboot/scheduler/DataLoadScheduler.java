@@ -35,7 +35,7 @@ public class DataLoadScheduler {
 		symbolLoaderService.populateSymbol();
 	}
 
-	@Scheduled(cron = "0 * * * * *")
+	@Scheduled(cron = "0 * * * * *" , zone = "IST")
 	public void priceLoadScheduler() throws IOException {
 		List<Stocks> stockList = stockRepository.findAllStocks();
 		LOGGER.warn("Start");
