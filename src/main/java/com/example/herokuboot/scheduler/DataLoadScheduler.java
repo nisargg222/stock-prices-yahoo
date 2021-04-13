@@ -29,14 +29,4 @@ public class DataLoadScheduler {
 	public void priceLoadScheduler() throws IOException {
 		priceLoaderService.populatePrice();
 	}
-	
-	@Scheduled(cron = "20 * * * * *")
-	public void priceLoadScheduler1() throws IOException {
-		priceLoaderService.populatePrice1();
-	}
-
-	@Scheduled(cron = "40 * * * * *")
-	public void priceLoadScheduler2() throws IOException {
-		priceLoaderService.populatePrice2();
-	}
 }
