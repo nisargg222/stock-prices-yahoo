@@ -1,11 +1,10 @@
 package com.example.herokuboot.service;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.herokuboot.entity.Stocks;
@@ -16,18 +15,13 @@ import yahoofinance.Stock;
 @Service
 public class PriceLoaderService {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(PriceLoaderService.class);
-
 	@Autowired
 	private StockRepository stockRepository;
 
-	public void populatePrice() throws IOException {
-		LOGGER.info("Start");
-		List<Stocks> stockList = stockRepository.findAllStocks();
-		for (int i = 0; i < stockList.size(); i++) {
-			stockList.get(i).setPrice((new Stock(stockList.get(i).getSymbol() + ".NS")).getQuote(true).getPrice().toString());
-		}
-		stockRepository.saveAll(stockList);
-		LOGGER.info("End");
+	@Async
+	public CompletableFuture<Stocks> updatePrice(Stocks stock) throws IOException {
+		stock.setPrice((new Stock(stock.getSymbol() + ".NS")).getQuote(true).getPrice().toString());
+		stockRepository.save(stock);
+		return CompletableFuture.completedFuture(stock);
 	}
 }
