@@ -24,29 +24,27 @@ public class SymbolLoaderService {
 	private StockRepository stockRepository;
 
 	public void populateSymbol() {
-		if (stockRepository.findAllStocks().isEmpty()) {
-			LOGGER.info("Time");
-			ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
-			try (BufferedInputStream inputStream = new BufferedInputStream(
-					new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
+		LOGGER.info("Time");
+		ArrayList<Stocks> stock_list = new ArrayList<Stocks>();
+		try (BufferedInputStream inputStream = new BufferedInputStream(
+				new URL("https://www1.nseindia.com/content/equities/EQUITY_L.csv").openStream());) {
 
-				byte data[] = IOUtils.toByteArray(inputStream);
-				String[] stock_data = (new String(data)).split("\n");
+			byte data[] = IOUtils.toByteArray(inputStream);
+			String[] stock_data = (new String(data)).split("\n");
 
-				for (int i = 1; i < stock_data.length; i++) {
-					String[] stock_split = stock_data[i].split(",");
+			for (int i = 1; i < stock_data.length; i++) {
+				String[] stock_split = stock_data[i].split(",");
 
-					Stocks stock = new Stocks();
-					stock.setSymbol(stock_split[0]);
-					stock.setName(stock_split[1]);
-					stock_list.add(stock);
-				}
-				int stock_added = saveList(stock_list);
-
-				LOGGER.info("Added " + stock_added + " stocks to the db.");
-			} catch (IOException e) {
-				LOGGER.debug("exception handled");
+				Stocks stock = new Stocks();
+				stock.setSymbol(stock_split[0]);
+				stock.setName(stock_split[1]);
+				stock_list.add(stock);
 			}
+			int stock_added = saveList(stock_list);
+
+			LOGGER.info("Added " + stock_added + " stocks to the db.");
+		} catch (IOException e) {
+			LOGGER.debug("exception handled");
 		}
 	}
 

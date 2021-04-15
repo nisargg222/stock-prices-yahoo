@@ -1,10 +1,11 @@
 package com.example.herokuboot.service;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import com.example.herokuboot.entity.Stocks;
@@ -19,9 +20,9 @@ public class PriceLoaderService {
 	private StockRepository stockRepository;
 
 	@Async
-	public CompletableFuture<Stocks> updatePrice(Stocks stock) throws IOException {
+	public Future<String> updatePrice(Stocks stock) throws IOException {
 		stock.setPrice((new Stock(stock.getSymbol() + ".NS")).getQuote(true).getPrice().toString());
 		stockRepository.save(stock);
-		return CompletableFuture.completedFuture(stock);
+		return new AsyncResult<>("Done");
 	}
 }

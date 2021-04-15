@@ -1,4 +1,4 @@
-package com.example.herokuboot.Configuration;
+package com.example.herokuboot.config;
 
 import java.util.concurrent.Executor;
 
@@ -17,8 +17,8 @@ public class AsyncConfiguration {
     public Executor taskExecutor() {
         LOGGER.debug("Creating Async Task Executor");
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(100);
-        executor.setMaxPoolSize(100);
+        executor.setCorePoolSize(500);
+        executor.setMaxPoolSize(500);
         executor.setQueueCapacity(2000);
         executor.setThreadNamePrefix("StockThread-");
         executor.initialize();
