@@ -42,7 +42,7 @@ class HelloController {
 		return "Stocks";
 	}
 
-	@GetMapping("/greetings")
+	@GetMapping("/prices")
 	List<Stocks> greetings() {
 		return (List<Stocks>) stockRepository.findAll();
 	}
